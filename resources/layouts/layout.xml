@@ -1,2 +1,9 @@
-<layout id="MainLayout">
+<resources>
+<layout id="StatusLayout">
+    <label x="center" y="20%" text="Time" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label id="time" x="center" y="30%" text="-" font="Graphics.FONT_SMALL" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label x="center" y="50%" text="Place" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label id="lat" x="center" y="60%" text="-" font="Graphics.FONT_SMALL" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label id="lon" x="center" y="70%" text="-" font="Graphics.FONT_SMALL" justification="Graphics.TEXT_JUSTIFY_CENTER" />
 </layout>
+</resources>

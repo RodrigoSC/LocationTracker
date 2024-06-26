@@ -31,11 +31,11 @@ class LocationTrackerApp extends Application.AppBase {
     public function getServiceDelegate() as Array<ServiceDelegate> {
         return [new LocationTrackerServiceDelegate()] as Array<ServiceDelegate>;
     }
-
-        public function saveLocation() as Void {
+    
+    public function saveLocation() as Void {
         System.println("saveLocation");
-        var myLocation = Position.getInfo().position.toDegrees();
         var time = Time.now().value();
+        var myLocation = Position.getInfo().position.toDegrees();
         var place = Lang.format("$1$;$2$", [myLocation[0], myLocation[1]]);
         System.println("Time: " + time);
         System.println("Place: " + place); 

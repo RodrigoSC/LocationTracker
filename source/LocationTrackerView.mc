@@ -12,8 +12,6 @@ class LocationTrackerView extends WatchUi.View {
 
     // Load your resources here
     function onLayout(dc as Dc) as Void {
-        System.println("onLayout");
-        setLayout(Rez.Layouts.MainLayout(dc));
     }
 
     // Called when this View is brought to the foreground.
@@ -22,9 +20,9 @@ class LocationTrackerView extends WatchUi.View {
         System.println("onShow");
         if (_menuPushed == false) {
             var menu = new WatchUi.Menu2({:title=>"Tracker"});
-            menu.addItem(new WatchUi.MenuItem("Show map", null, "show_map", null));
             menu.addItem(new WatchUi.ToggleMenuItem("Tracking", {:enabled=>"On", :disabled=>"Off"}, "toggle_tracking", 
                         Background.getTemporalEventRegisteredTime() != null , null));
+            menu.addItem(new WatchUi.MenuItem("Status", null, "status", null));
             var delegate = new MenuDelegate();
             WatchUi.pushView(menu, delegate, WatchUi.SLIDE_UP);
             _menuPushed = true;
@@ -34,7 +32,6 @@ class LocationTrackerView extends WatchUi.View {
     }
     // Update the view
     function onUpdate(dc as Dc) as Void {
-        System.println("onUpdate");
         // Call the parent onUpdate function to redraw the layout
         View.onUpdate(dc);
     }

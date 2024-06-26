@@ -9,8 +9,9 @@ class MenuDelegate extends WatchUi.Menu2InputDelegate {
 
     public function onSelect(item as MenuItem) as Void {
         var id = item.getId();
-        if (id.equals("show_map")) {
-            System.println("Show map");
+        if (id.equals("status")) {
+            System.println("Show status");
+            WatchUi.pushView(new StatusView(), null, WatchUi.SLIDE_UP); 
         } else if (id.equals("toggle_tracking")) {
             if((item as ToggleMenuItem).isEnabled()) {
                 System.println("Enabling tracker");
