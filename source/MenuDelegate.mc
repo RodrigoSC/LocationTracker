@@ -10,18 +10,23 @@ class MenuDelegate extends WatchUi.Menu2InputDelegate {
     public function onSelect(item as MenuItem) as Void {
         var id = item.getId();
         if (id.equals("status")) {
-            System.println("Show status");
+            log("Show status");
             WatchUi.pushView(new StatusView(), null, WatchUi.SLIDE_UP); 
         } else if (id.equals("toggle_tracking")) {
+            getApp().setTracking((item as ToggleMenuItem).isEnabled());
+        } else if (id.equals("toggle_reminder")) {
             if((item as ToggleMenuItem).isEnabled()) {
-                System.println("Enabling tracker");
+                log("Enabling reminder");
                 getApp().setBackgroundEvent();
             } else {
-                System.println("Disabling tracker");
+                log("Disabling reminder");
                 getApp().deleteBackgroundEvent();
             }
+        } else if (id.equals("export")) {
+            log("Exporting data");
+            getApp().export();
         } else {
-            System.println("Not implemented menu");
+            log("Not implemented menu");
         }
     }
 }

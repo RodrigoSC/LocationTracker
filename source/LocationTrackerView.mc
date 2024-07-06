@@ -1,6 +1,8 @@
 import Toybox.Lang;
 import Toybox.Graphics;
 import Toybox.WatchUi;
+import Toybox.Position;
+import Toybox.Application.Storage;
 
 class LocationTrackerView extends WatchUi.View {
     private var _menuPushed as Boolean;
@@ -17,14 +19,17 @@ class LocationTrackerView extends WatchUi.View {
     // Called when this View is brought to the foreground.
     // Used to show the app view
     public function onShow() as Void {
-        System.println("onShow");
+        logm("LocationTrackerView", "onShow");
         if (_menuPushed == false) {
             var menu = new WatchUi.Menu2({:title=>"Tracker"});
             menu.addItem(new WatchUi.ToggleMenuItem("Tracking", {:enabled=>"On", :disabled=>"Off"}, "toggle_tracking", 
-                        Background.getTemporalEventRegisteredTime() != null , null));
+                        getApp().isTracking(), null));
+            menu.addItem(new WatchUi.ToggleMenuItem("Reminder", {:enabled=>"On", :disabled=>"Off"}, "toggle_reminder", 
+                        getApp().isReminding(), null));
             menu.addItem(new WatchUi.MenuItem("Status", null, "status", null));
-            var delegate = new MenuDelegate();
-            WatchUi.pushView(menu, delegate, WatchUi.SLIDE_UP);
+            menu.addItem(new WatchUi.MenuItem("Export", null, "export", null));
+            menu.addItem(new WatchUi.MenuItem("Clear", null, "clear", null));
+            WatchUi.pushView(menu, new MenuDelegate(), WatchUi.SLIDE_UP);
             _menuPushed = true;
         } else {
             WatchUi.popView(WatchUi.SLIDE_UP);
