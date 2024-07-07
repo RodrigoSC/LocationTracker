@@ -1,9 +1,8 @@
 import Toybox.Application;
-import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.System;
 import Toybox.Background;
-import Toybox.Position;
+import Toybox.Lang;
 
 (:background)
 class LocationTrackerApp extends Application.AppBase {
@@ -17,7 +16,6 @@ class LocationTrackerApp extends Application.AppBase {
 
     // onStart() is called on application start up
     function onStart(state as Dictionary?) as Void {
-        tracker = new Tracker();
     }
 
     // onStop() is called when your application is exiting
@@ -27,35 +25,19 @@ class LocationTrackerApp extends Application.AppBase {
         }
     }
 
+
     // Return the initial view of your application here
     function getInitialView() as Array<Views or InputDelegates>? {
         logm("LocationTrackerApp","getInitialView");
         _inBackground = false;
         _view = new LocationTrackerView();
+        tracker = new Tracker();
         tracker.setupLocationEvents();
         return [ _view ] as Array<Views or InputDelegates>;
     }
 
     public function getServiceDelegate() as Array<ServiceDelegate> {
         return [new LocationTrackerServiceDelegate()] as Array<ServiceDelegate>;
-    }
-    
-    public function setBackgroundEvent() as Void {
-        logm("LocationTrackerApp","setBackgroundEvent");
-        try {
-            var reminderInterval = Properties.getValue("ReminderInterval");
-            if (reminderInterval != 0) {
-                log("Setting background event");
-                Background.registerForTemporalEvent(new Time.Duration(reminderInterval * 60));
-            }
-        } catch (e instanceof Background.InvalidBackgroundTimeException) {
-            log("Exception!!"); // This will happen if timer < 5 mins
-        }
-    }
-
-    public function deleteBackgroundEvent() as Void {
-        logm("LocationTrackerApp","deleteBackgroundEvent");
-        Background.deleteTemporalEvent();
     }
 }
 

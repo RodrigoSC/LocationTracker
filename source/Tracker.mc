@@ -1,6 +1,7 @@
 import Toybox.Application;
 import Toybox.Position;
 import Toybox.Lang;
+import Toybox.Background;
 
 class Tracker {
     private var _position_event as Lang.Method?;
@@ -52,10 +53,7 @@ class Tracker {
     public function setTracking(val as Boolean) {
         Properties.setValue("Tracking", val);
         setupLocationEvents();
-    }
-
-    public function isReminding() as Boolean {
-        return Background.getTemporalEventRegisteredTime() != null;
+        setupReminder();
     }
 
     public function export() {
@@ -72,5 +70,28 @@ class Tracker {
         log("Reseting data");
         Storage.clearValues();
         Properties.setValue("LastStoragePos", 0);       
+    }
+
+    public function getReminderInterval() as Number {
+        return Properties.getValue("ReminderInterval");
+    }
+
+    public function setReminderInterval(interval as Number) {
+        Properties.setValue("ReminderInterval", interval);
+        setupReminder();
+    }
+
+    public function setupReminder() {
+        var interval = getReminderInterval();
+        if (isTracking() && interval > 0) {
+            try {
+                log(Lang.format("Setting reminder to $1$ minutes", [interval]));
+                Background.registerForTemporalEvent(new Time.Duration(interval * 60));
+            } catch (e instanceof Background.InvalidBackgroundTimeException) {
+                log("Exception setting interval!!"); // This will happen if timer < 5 mins
+            }
+        } else {
+            Background.deleteTemporalEvent();
+        }
     }
 }
