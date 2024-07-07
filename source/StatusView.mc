@@ -4,9 +4,12 @@ import Toybox.WatchUi;
 import Toybox.Position;
 
 class StatusView extends WatchUi.View {
+    var tracker as Tracker;
+
     function initialize() {
         View.initialize();
-        getApp().setOnPositionEvent(method(:onPosition));
+        tracker = getApp().tracker;
+        tracker.setOnPositionEvent(method(:onPosition));
     }
 
     public function onPosition(info) {
@@ -18,7 +21,6 @@ class StatusView extends WatchUi.View {
     function onLayout(dc as Dc) as Void {
         setLayout($.Rez.Layouts.StatusLayout(dc));
     }
-
 
     function qualityToString (qual as Position.Quality) as String {
         if (qual == Position.QUALITY_NOT_AVAILABLE) { return "Not available"; }
@@ -50,6 +52,6 @@ class StatusView extends WatchUi.View {
     // state of this View here. This includes freeing resources from
     // memory.
     function onHide() as Void {
-        getApp().setOnPositionEvent(null);
+        tracker.setOnPositionEvent(null);
     }
 }

@@ -1,6 +1,6 @@
 <properties>
     <property id="Tracking" type="boolean">false</property>
     <property id="ReminderInterval" type="number">60</property>
-    <property id="LastStoragePos" type="number">10</property>
+    <property id="LastStoragePos" type="number">0</property>
     <property id="LastSave" type="number">0</property>
 </properties>

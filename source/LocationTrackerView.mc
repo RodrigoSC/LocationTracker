@@ -21,15 +21,8 @@ class LocationTrackerView extends WatchUi.View {
     public function onShow() as Void {
         logm("LocationTrackerView", "onShow");
         if (_menuPushed == false) {
-            var menu = new WatchUi.Menu2({:title=>"Tracker"});
-            menu.addItem(new WatchUi.ToggleMenuItem("Tracking", {:enabled=>"On", :disabled=>"Off"}, "toggle_tracking", 
-                        getApp().isTracking(), null));
-            menu.addItem(new WatchUi.ToggleMenuItem("Reminder", {:enabled=>"On", :disabled=>"Off"}, "toggle_reminder", 
-                        getApp().isReminding(), null));
-            menu.addItem(new WatchUi.MenuItem("Status", null, "status", null));
-            menu.addItem(new WatchUi.MenuItem("Export", null, "export", null));
-            menu.addItem(new WatchUi.MenuItem("Clear", null, "clear", null));
-            WatchUi.pushView(menu, new MenuDelegate(), WatchUi.SLIDE_UP);
+            var delegate = new MenuDelegate();
+            WatchUi.pushView(delegate.buildMenu(), delegate, WatchUi.SLIDE_UP);
             _menuPushed = true;
         } else {
             WatchUi.popView(WatchUi.SLIDE_UP);
