@@ -2,17 +2,47 @@ import Toybox.Lang;
 import Toybox.Graphics;
 import Toybox.WatchUi;
 import Toybox.Position;
+using Toybox.Timer;
+
+
+class StatusViewDelegate extends BehaviorDelegate {
+    public function initialize() { 
+        WatchUi.BehaviorDelegate.initialize();
+    }
+
+    public function onSelect() as Boolean {
+        var delegate = new MenuDelegate();
+        WatchUi.pushView(delegate.buildMenu(), delegate, WatchUi.SLIDE_RIGHT);
+        return true;
+    }
+}
 
 class StatusView extends WatchUi.View {
     var tracker as Tracker;
+    var screenHeight as Number = 0;
+    var screenWidth as Number = 0;
+    var refreshTimer as Timer.Timer = new Timer.Timer();
 
     function initialize() {
         View.initialize();
         tracker = getApp().tracker;
-        tracker.setOnPositionEvent(method(:onPosition));
     }
 
-    public function onPosition(info) {
+    function timerCallback() as Void {
+        requestUpdate();
+    }
+
+    function onShow() as Void {
+        tracker.setOnPositionEvent(method(:onPosition));
+        refreshTimer.start(method(:timerCallback), 5000, true);
+    }
+
+    function onHide() as Void {
+        tracker.setOnPositionEvent(null);
+        refreshTimer.stop();
+    }
+
+    public function onPosition(info as Position.Info) as Void {
         logm("StatusView","onPosition");
         requestUpdate();
     }
@@ -20,38 +50,56 @@ class StatusView extends WatchUi.View {
     // Load your resources here
     function onLayout(dc as Dc) as Void {
         setLayout($.Rez.Layouts.StatusLayout(dc));
+        screenWidth = dc.getWidth();
+        screenHeight = dc.getHeight();
     }
 
-    function qualityToString (qual as Position.Quality) as String {
-        if (qual == Position.QUALITY_NOT_AVAILABLE) { return "Not available"; }
-        else if (qual == Position.QUALITY_LAST_KNOWN) { return "Last known"; }
-        else if (qual == Position.QUALITY_POOR) { return "Poor..."; }
-        else if (qual == Position.QUALITY_USABLE) { return "Usable"; }
-        else if (qual == Position.QUALITY_GOOD) { return "Good!"; }
-        else { return "Unknown value"; }
+    function qualityToColor (qual as Position.Quality) as Graphics.ColorValue {
+        if (qual == Position.QUALITY_NOT_AVAILABLE) { return Graphics.COLOR_RED; }
+        else if (qual == Position.QUALITY_LAST_KNOWN) { return Graphics.COLOR_LT_GRAY; }
+        else if (qual == Position.QUALITY_POOR) { return Graphics.COLOR_YELLOW; }
+        else if (qual == Position.QUALITY_USABLE) { return Graphics.COLOR_DK_GREEN; }
+        else if (qual == Position.QUALITY_GOOD) { return Graphics.COLOR_GREEN; }
+        return Graphics.COLOR_PURPLE;
     }
 
+    function lastSaveText() as String {
+        var diff = Time.now().value() - tracker.getLastSave();
+        if (diff < 0) { return "In the future?"; }
+        if (diff < 5) { return "Just now"; }
+        if (diff < 60) { return "Seconds ago"; }
+        if (diff < 120) { return "A minute ago"; }
+        if (diff < 60 * 60) { return Lang.format("$1$ minutes ago", [diff / 60 as Number]); }
+        if (diff < 60 * 60 * 2) { return "An hour ago"; }
+        if (diff < 60 * 60 * 24) { return Lang.format("$1$ hours ago", [diff / (60*60) as Number]);}
+        return Lang.format("$1$ days ago", [diff / (60*60*24) as Number]);
+    }
+    
     // Update the view
     function onUpdate(dc as Dc) as Void {
-        var qualityView = View.findDrawableById("quality") as Text;
-        var timeView = View.findDrawableById("time") as Text;
-        var lonView = View.findDrawableById("lon") as Text;
-        var latView = View.findDrawableById("lat") as Text;
+        var gps_text = View.findDrawableById("gps") as Text;
+        var track_text = View.findDrawableById("tracking") as Text;
+        var lastsave_text = View.findDrawableById("last_save") as Text;
+        var lon_text = View.findDrawableById("lon") as Text;
+        var lat_text = View.findDrawableById("lat") as Text;
         var pos = Position.getInfo();
         var location = pos.position.toDegrees();
         
-        qualityView.setText(qualityToString(pos.accuracy));
-        timeView.setText(Time.now().value().format("%02d"));
-        lonView.setText(location[0].format("%f"));
-        latView.setText(location[1].format("%f"));
-        // Call the parent onUpdate function to redraw the layout
+        lon_text.setText(location[0].format("%f"));
+        lat_text.setText(location[1].format("%f"));
+        lastsave_text.setText(lastSaveText());
+
         View.onUpdate(dc);
+        
+        addColorSign(dc, gps_text, qualityToColor(pos.accuracy));
+        addColorSign(dc, track_text, tracker.isTracking() ? Graphics.COLOR_GREEN : Graphics.COLOR_RED);
     }
 
-    // Called when this View is removed from the screen. Save the
-    // state of this View here. This includes freeing resources from
-    // memory.
-    function onHide() as Void {
-        tracker.setOnPositionEvent(null);
+    function addColorSign(dc as Dc, text as Text, color as Graphics.ColorValue) as Void {
+        var circle_radius = 10;
+        var circle_x = screenWidth/2 - (circle_radius*3 + text.width)/2;
+        text.setLocation(circle_x + circle_radius*2, text.locY);
+        dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(circle_x, text.locY + text.height/2, circle_radius);        
     }
 }

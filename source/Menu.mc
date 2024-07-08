@@ -13,7 +13,6 @@ class MenuDelegate extends WatchUi.Menu2InputDelegate {
         menu.addItem(new WatchUi.ToggleMenuItem("Tracking", {:enabled=>"On", :disabled=>"Off"}, "toggle_tracking", 
                     tracker.isTracking(), null));
         menu.addItem(new WatchUi.MenuItem("Reminder", reminderText(tracker.getReminderInterval()), "reminder", null));
-        menu.addItem(new WatchUi.MenuItem("Status", null, "status", null));
         menu.addItem(new WatchUi.MenuItem("Export", null, "export", null));
         menu.addItem(new WatchUi.MenuItem("Reset...", null, "reset", null));
         return menu;
@@ -22,10 +21,7 @@ class MenuDelegate extends WatchUi.Menu2InputDelegate {
     public function onSelect(item as MenuItem) as Void {
         var id = item.getId();
         var tracker = getApp().tracker;
-        if (id.equals("status")) {
-            log("Show status");
-            WatchUi.pushView(new StatusView(), null, WatchUi.SLIDE_UP); 
-        } else if (id.equals("toggle_tracking")) {
+        if (id.equals("toggle_tracking")) {
             tracker.setTracking((item as ToggleMenuItem).isEnabled());
         } else if (id.equals("reminder")) {
             var reminderDelegate = new ReminderMenuDelegate(item);

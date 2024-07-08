@@ -4,13 +4,16 @@ import Toybox.Lang;
 import Toybox.Background;
 
 class Tracker {
-    private var _position_event as Lang.Method?;
+    private var _position_event as Method(info as Position.Info) as Void?;
 
+    public function getLastSave() as Number {
+        return Properties.getValue("LastSave");
+    }
+    
     public function savePosition(info as Position.Info) {
         logm("Tracker","savePoint");
         var time = Time.now().value();
-        var lastSave = Properties.getValue("LastSave");
-        if (isTracking() && (time - lastSave > 10) && (info.accuracy == Position.QUALITY_USABLE or info.accuracy == Position.QUALITY_GOOD)) {
+        if (isTracking() && (time - getLastSave() > 10) && (info.accuracy == Position.QUALITY_USABLE or info.accuracy == Position.QUALITY_GOOD)) {
             var myLocation = info.position.toDegrees();
             var lastStoragePos = Properties.getValue("LastStoragePos");
             log(Lang.format("Saving on index $1$", [lastStoragePos]));
@@ -42,7 +45,7 @@ class Tracker {
         }
     }
 
-    public function setOnPositionEvent(evt) {
+    public function setOnPositionEvent(evt as Method(info as Position.Info) as Void?) {
         _position_event = evt;
     }
 

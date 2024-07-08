@@ -7,7 +7,6 @@ import Toybox.Lang;
 (:background)
 class LocationTrackerApp extends Application.AppBase {
     private var _inBackground = true;
-    private var _view as LocationTrackerView?; 
     public var tracker as Tracker?;
 
     function initialize() {
@@ -30,10 +29,9 @@ class LocationTrackerApp extends Application.AppBase {
     function getInitialView() as Array<Views or InputDelegates>? {
         logm("LocationTrackerApp","getInitialView");
         _inBackground = false;
-        _view = new LocationTrackerView();
         tracker = new Tracker();
         tracker.setupLocationEvents();
-        return [ _view ] as Array<Views or InputDelegates>;
+        return [ new StatusView(), new StatusViewDelegate() ] as Array<Views or InputDelegates>;
     }
 
     public function getServiceDelegate() as Array<ServiceDelegate> {

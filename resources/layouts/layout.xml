@@ -1,11 +1,11 @@
 <resources>
 <layout id="StatusLayout">
-    <label x="center" y="10%" text="Quality" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <label id="quality" x="center" y="20%" text="- " font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <label x="center" y="35%" text="Time" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <label id="time" x="center" y="45%" text="-" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <label x="center" y="60%" text="Location" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <label id="lat" x="center" y="70%" text="-" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <label id="lon" x="center" y="80%" text="-" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label id="gps" x="center" y="25" text="GPS" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_LEFT" />
+    <label id="tracking" x="center" y="65" text="Tracking" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_LEFT" />
+    <label x="center" y="160" text="Last Save" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label id="last_save" x="center" y="190" text="Seconds ago" font="Graphics.FONT_MEDIUM" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label x="center" y="295" text="Current Position" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label id="lat" x="center" y="335" text="-" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label id="lon" x="center" y="375" text="-" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
 </layout>
 </resources>
