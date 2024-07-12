@@ -3,6 +3,8 @@ import Toybox.System;
 import Toybox.WatchUi;
 
 class MenuDelegate extends WatchUi.Menu2InputDelegate {
+    var progressBar as WatchUi.ProgressBar?;
+
     function initialize() {
         Menu2InputDelegate.initialize();
     }
@@ -27,12 +29,27 @@ class MenuDelegate extends WatchUi.Menu2InputDelegate {
             var reminderDelegate = new ReminderMenuDelegate(item);
             WatchUi.pushView(reminderDelegate.buildMenu(), reminderDelegate, WatchUi.SLIDE_RIGHT);
         } else if (id.equals("export")) { 
-            tracker.export();
+            progressBar = new WatchUi.ProgressBar("Processing...", null);
+            WatchUi.pushView(progressBar, new ExportProgressDelegate(), WatchUi.SLIDE_IMMEDIATE);
+            tracker.export(method(:exportProgress));
         } else if (id.equals("reset")) {
             var dialog = new WatchUi.Confirmation("Are you sure you want to reset the tracking?");
             WatchUi.pushView(dialog, new ResetConfirmationDelegate(), WatchUi.SLIDE_IMMEDIATE);
         } else {
             log("Not implemented menu");
+        }
+    }
+
+    function exportProgress (responseCode as Number, percent as Float) as Void {
+        progressBar.setProgress(percent);
+        if (percent == 100.0) {
+            if (responseCode == 200) {
+                progressBar.setDisplayString("Done!");
+            } else if (responseCode == -104) {
+                progressBar.setDisplayString("Phone not connected");
+            } else {
+                progressBar.setDisplayString("Error code: " + responseCode);
+            }
         }
     }
 }
@@ -77,6 +94,16 @@ class ResetConfirmationDelegate extends WatchUi.ConfirmationDelegate {
         if (response == WatchUi.CONFIRM_YES) {
             getApp().tracker.reset();
         } 
+        return true;
+    }
+}
+
+class ExportProgressDelegate extends WatchUi.BehaviorDelegate {
+    function initialize() {
+        BehaviorDelegate.initialize();
+    }
+
+    function onBack() as Boolean {
         return true;
     }
 }

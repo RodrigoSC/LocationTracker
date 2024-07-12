@@ -2,6 +2,7 @@ import Toybox.Application;
 import Toybox.Position;
 import Toybox.Lang;
 import Toybox.Background;
+using Toybox.Communications;
 
 class Tracker {
     private var _position_event as Method(info as Position.Info) as Void?;
@@ -59,14 +60,9 @@ class Tracker {
         setupReminder();
     }
 
-    public function export() {
-        var lastStoragePos = Properties.getValue("LastStoragePos");
-        System.println("--- Start Export ---");
-        for (var i = 0; i < lastStoragePos; i++) {
-            var values = Storage.getValue(i);
-            System.println(Lang.format("$1$,$2$,$3$", values));
-        }
-        System.println("--- End Export ---");
+    public function export(callback as Method(responseCode as Number, percent as Float) as Void?) {
+        var request = new ExportRequest();
+        request.sendData(me, callback);
     }
 
     public function reset() {
@@ -96,5 +92,20 @@ class Tracker {
         } else {
             Background.deleteTemporalEvent();
         }
+    }
+
+    public function getLastPos() {
+        return Properties.getValue("LastStoragePos");
+    }
+    
+    public function getData(start as Number, end as Number) as Array {
+        var array = [];
+        var last = getLastPos();
+        last = last > end ? end : last;
+        for (var i = start; i < last; i++) {
+            var item = Storage.getValue(i);
+            array.add({"nbr" => i, "time" => item[0], "lat" => item[1], "lon" => item[1]});
+        }
+        return array;
     }
 }
