@@ -6,12 +6,16 @@ using Toybox.Timer;
 
 
 class StatusViewDelegate extends BehaviorDelegate {
-    public function initialize() { 
+    var tracker as Tracker;
+
+    public function initialize(tracker) { 
+        me.tracker = tracker;
         WatchUi.BehaviorDelegate.initialize();
     }
 
     public function onSelect() as Boolean {
-        var delegate = new MenuDelegate();
+        var delegate = new MenuDelegate(tracker);
+        tracker.setAutoExit(false);
         WatchUi.pushView(delegate.buildMenu(), delegate, WatchUi.SLIDE_RIGHT);
         return true;
     }
@@ -23,9 +27,9 @@ class StatusView extends WatchUi.View {
     var screenWidth as Number = 0;
     var refreshTimer as Timer.Timer = new Timer.Timer();
 
-    function initialize() {
+    function initialize(tracker as Tracker) {
+        me.tracker = tracker;
         View.initialize();
-        tracker = getApp().tracker;
     }
 
     function timerCallback() as Void {
@@ -79,6 +83,7 @@ class StatusView extends WatchUi.View {
     function onUpdate(dc as Dc) as Void {
         var gps_text = View.findDrawableById("gps") as Text;
         var track_text = View.findDrawableById("tracking") as Text;
+        var auto_exit_text = View.findDrawableById("auto_exit") as Text;
         var lastsave_text = View.findDrawableById("last_save") as Text;
         var lon_text = View.findDrawableById("lon") as Text;
         var lat_text = View.findDrawableById("lat") as Text;
@@ -88,6 +93,11 @@ class StatusView extends WatchUi.View {
         lon_text.setText(location[0].format("%f"));
         lat_text.setText(location[1].format("%f"));
         lastsave_text.setText(lastSaveText());
+        if (tracker.getAutoExit()) {
+            auto_exit_text.setText(Lang.format("$1$ saves to quit", [tracker.getSavesToQuit()]));
+        } else {
+            auto_exit_text.setText("");
+        }
 
         View.onUpdate(dc);
         

@@ -6,8 +6,9 @@ import Toybox.Lang;
 
 (:background)
 class LocationTrackerApp extends Application.AppBase {
-    private var _inBackground = true;
-    public var tracker as Tracker?;
+    private var inBackground = true;
+    private var fromBackground = false;
+    private var tracker as Tracker?;
 
     function initialize() {
         AppBase.initialize();
@@ -19,23 +20,28 @@ class LocationTrackerApp extends Application.AppBase {
 
     // onStop() is called when your application is exiting
     function onStop(state as Dictionary?) as Void {
-        if (!_inBackground) {
+        if (!inBackground) {
             tracker.stopLocationEvents();
         }
     }
 
-
     // Return the initial view of your application here
     function getInitialView() as Array<Views or InputDelegates>? {
         logm("LocationTrackerApp","getInitialView");
-        _inBackground = false;
+        inBackground = false;
         tracker = new Tracker();
         tracker.setupLocationEvents();
-        return [ new StatusView(), new StatusViewDelegate() ] as Array<Views or InputDelegates>;
+        tracker.setAutoExit(fromBackground);
+        return [ new StatusView(tracker), new StatusViewDelegate(tracker) ] as Array<Views or InputDelegates>;
     }
 
     public function getServiceDelegate() as Array<ServiceDelegate> {
         return [new LocationTrackerServiceDelegate()] as Array<ServiceDelegate>;
+    }
+
+    public function onBackgroundData(data as Application.PersistableType) {
+        logm("LocationTrackerApp", "onBackgroundData");
+        fromBackground = true;
     }
 }
 

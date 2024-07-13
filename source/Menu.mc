@@ -4,14 +4,15 @@ import Toybox.WatchUi;
 
 class MenuDelegate extends WatchUi.Menu2InputDelegate {
     var progressBar as WatchUi.ProgressBar?;
+    var tracker as Tracker;
 
-    function initialize() {
+    function initialize(tracker as Tracker) {
+        me.tracker = tracker;
         Menu2InputDelegate.initialize();
     }
 
     public function buildMenu () {
         var menu = new WatchUi.Menu2({:title=>"Tracker"});
-        var tracker = getApp().tracker;
         menu.addItem(new WatchUi.ToggleMenuItem("Tracking", {:enabled=>"On", :disabled=>"Off"}, "toggle_tracking", 
                     tracker.isTracking(), null));
         menu.addItem(new WatchUi.MenuItem("Reminder", reminderText(tracker.getReminderInterval()), "reminder", null));
@@ -22,11 +23,10 @@ class MenuDelegate extends WatchUi.Menu2InputDelegate {
 
     public function onSelect(item as MenuItem) as Void {
         var id = item.getId();
-        var tracker = getApp().tracker;
         if (id.equals("toggle_tracking")) {
             tracker.setTracking((item as ToggleMenuItem).isEnabled());
         } else if (id.equals("reminder")) {
-            var reminderDelegate = new ReminderMenuDelegate(item);
+            var reminderDelegate = new ReminderMenuDelegate(tracker, item);
             WatchUi.pushView(reminderDelegate.buildMenu(), reminderDelegate, WatchUi.SLIDE_RIGHT);
         } else if (id.equals("export")) { 
             progressBar = new WatchUi.ProgressBar("Processing...", null);
@@ -34,7 +34,7 @@ class MenuDelegate extends WatchUi.Menu2InputDelegate {
             tracker.export(method(:exportProgress));
         } else if (id.equals("reset")) {
             var dialog = new WatchUi.Confirmation("Are you sure you want to reset the tracking?");
-            WatchUi.pushView(dialog, new ResetConfirmationDelegate(), WatchUi.SLIDE_IMMEDIATE);
+            WatchUi.pushView(dialog, new ResetConfirmationDelegate(tracker), WatchUi.SLIDE_IMMEDIATE);
         } else {
             log("Not implemented menu");
         }
@@ -55,10 +55,12 @@ class MenuDelegate extends WatchUi.Menu2InputDelegate {
 }
 
 class ReminderMenuDelegate extends WatchUi.Menu2InputDelegate {
-    private var _item as MenuItem?;
+    private var menuitem as MenuItem?;
+    private var tracker as Tracker?;
 
-    function initialize(item as MenuItem) {
-        _item = item;
+    function initialize(tracker as Tracker, item as MenuItem) {
+        menuitem = item;
+        me.tracker = tracker;
         Menu2InputDelegate.initialize();
     }
 
@@ -78,21 +80,23 @@ class ReminderMenuDelegate extends WatchUi.Menu2InputDelegate {
 
     public function onSelect(item as MenuItem) as Void {
         var id = item.getId() as String;
-        var tracker = getApp().tracker;
         tracker.setReminderInterval(id.toNumber());
-        _item.setSubLabel(reminderText(tracker.getReminderInterval()));
+        menuitem.setSubLabel(reminderText(tracker.getReminderInterval()));
         WatchUi.popView(WatchUi.SLIDE_RIGHT);
     }
 }
 
 class ResetConfirmationDelegate extends WatchUi.ConfirmationDelegate {
-    function initialize() {
+    private var tracker as Tracker;
+    
+    function initialize(tracker as Tracker) {
+        me.tracker = tracker;
         ConfirmationDelegate.initialize();
     }
 
     function onResponse(response) {
         if (response == WatchUi.CONFIRM_YES) {
-            getApp().tracker.reset();
+            tracker.reset();
         } 
         return true;
     }
