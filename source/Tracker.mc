@@ -112,7 +112,7 @@ class Tracker {
         var last = getLastPos();
         last = last > end ? end : last;
         for (var i = start; i < last; i++) {
-            var item = Storage.getValue(i);
+            var item = (Storage.getValue(i) as Array);
             array.add({"nbr" => i, "time" => item[0], "lat" => item[1], "lon" => item[2]});
         }
         return array;

@@ -6,5 +6,4 @@ The goal of this app is to register the location of the device at regular interv
 
 This version sets a background timer that will warn the use that it's time to save the position. This is the only way to get the GPS going and get some proper location.
 
-The location is stored in `Storage` and can be accessed via the "Export" menu option. This will dump the coordinates on a log file that can later be turned into a `gpx`
-file by using `gpxBuilder`.
+The location is stored in `Storage` and can be sent to a server via the "Export" commnd. The export command will do a REST call to a server (check the [server](server/) folder).
