@@ -107,7 +107,7 @@ class Tracker {
         return Properties.getValue("LastStoragePos");
     }
     
-    public function getData(start as Number, end as Number) as Array {
+    public function getData(start as Number, end as Number) as Array<Dictionary> {
         var array = [];
         var last = getLastPos();
         last = last > end ? end : last;

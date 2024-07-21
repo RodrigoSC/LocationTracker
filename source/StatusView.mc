@@ -2,7 +2,7 @@ import Toybox.Lang;
 import Toybox.Graphics;
 import Toybox.WatchUi;
 import Toybox.Position;
-using Toybox.Timer;
+import Toybox.Timer;
 
 
 class StatusViewDelegate extends BehaviorDelegate {
@@ -17,6 +17,21 @@ class StatusViewDelegate extends BehaviorDelegate {
         var delegate = new MenuDelegate(tracker);
         tracker.setAutoExit(false);
         WatchUi.pushView(delegate.buildMenu(), delegate, WatchUi.SLIDE_RIGHT);
+        return true;
+    }
+
+    function switchToMap(transition as WatchUi.SlideType) as Void {
+        var view = new MapView(tracker);
+        WatchUi.switchToView(view, new MapViewDelegate(tracker, view), transition);
+    }
+
+    public function onNextPage() as Boolean {
+        switchToMap(WatchUi.SLIDE_UP);
+        return true;
+    }
+
+    public function onPreviousPage() as Boolean {
+        switchToMap(WatchUi.SLIDE_DOWN);
         return true;
     }
 }
@@ -37,11 +52,13 @@ class StatusView extends WatchUi.View {
     }
 
     function onShow() as Void {
+        logm("StatusView", "onShow");
         tracker.setOnPositionEvent(method(:onPosition));
         refreshTimer.start(method(:timerCallback), 5000, true);
     }
 
     function onHide() as Void {
+        logm("StatusView", "onHide");
         tracker.setOnPositionEvent(null);
         refreshTimer.stop();
     }
@@ -53,6 +70,7 @@ class StatusView extends WatchUi.View {
 
     // Load your resources here
     function onLayout(dc as Dc) as Void {
+        logm("StatusView", "onLayout");
         setLayout($.Rez.Layouts.StatusLayout(dc));
         screenWidth = dc.getWidth();
         screenHeight = dc.getHeight();
@@ -81,6 +99,8 @@ class StatusView extends WatchUi.View {
     
     // Update the view
     function onUpdate(dc as Dc) as Void {
+        View.onUpdate(dc);
+        logm("StatusView", "onUpdate");
         var gps_text = View.findDrawableById("gps") as Text;
         var track_text = View.findDrawableById("tracking") as Text;
         var auto_exit_text = View.findDrawableById("auto_exit") as Text;
@@ -93,14 +113,13 @@ class StatusView extends WatchUi.View {
         lon_text.setText(location[0].format("%f"));
         lat_text.setText(location[1].format("%f"));
         lastsave_text.setText(lastSaveText());
+        
         if (tracker.getAutoExit()) {
             auto_exit_text.setText(Lang.format("$1$ saves to quit", [tracker.getSavesToQuit()]));
         } else {
             auto_exit_text.setText("");
         }
 
-        View.onUpdate(dc);
-        
         addColorSign(dc, gps_text, qualityToColor(pos.accuracy));
         addColorSign(dc, track_text, tracker.isTracking() ? Graphics.COLOR_GREEN : Graphics.COLOR_RED);
     }
