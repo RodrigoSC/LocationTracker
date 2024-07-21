@@ -10,6 +10,7 @@ class Point(BaseModel):
     time: int
     lat: float
     lon: float
+    alt: float
 
 class Track(BaseModel):
     track_id: int | None = None
@@ -24,8 +25,8 @@ async def save_track(track: Track):
             track.track_id = cur.lastrowid
         last_record = 0
         for point in track.points:
-            cur.execute("insert into point (track_id, nbr, time, lat, lon) values (?, ?, ?, ?, ?)",
-                        (track.track_id, point.nbr, point.time, point.lat, point.lon))
+            cur.execute("insert into point (track_id, nbr, time, lat, lon, alt) values (?, ?, ?, ?, ?, ?)",
+                        (track.track_id, point.nbr, point.time, point.lat, point.lon, point.alt))
             last_record = max(last_record, point.nbr)
     return {"track_id": track.track_id}
 

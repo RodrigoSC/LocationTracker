@@ -10,5 +10,6 @@ create table if not exists point (
     time integer,
     lat real,
     lon real,
+    alt real,
     foreign key (track_id) references track(id) on delete cascade 
 );

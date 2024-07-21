@@ -22,6 +22,7 @@ class StatusViewDelegate extends BehaviorDelegate {
 
     function switchToMap(transition as WatchUi.SlideType) as Void {
         var view = new MapView(tracker);
+        tracker.setAutoExit(false);
         WatchUi.switchToView(view, new MapViewDelegate(tracker, view), transition);
     }
 

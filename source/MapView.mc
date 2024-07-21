@@ -52,7 +52,7 @@ class MapView extends WatchUi.MapView {
 
         setMapMode(WatchUi.MAP_MODE_PREVIEW);
         updatePoly();
-        MapView.setScreenVisibleArea(0, 0, System.getDeviceSettings().screenWidth, System.getDeviceSettings().screenHeight);
+        setScreenVisibleArea(0, 0, System.getDeviceSettings().screenWidth, System.getDeviceSettings().screenHeight);
     }
 
     public function onLayout(dc as Dc) as Void {
@@ -97,18 +97,15 @@ class MapView extends WatchUi.MapView {
             if (lon < box["left"]) {box["left"] = lon;}
             if (lon > box["right"]) {box["right"] = lon;}
         }
-        MapView.clear();
-        MapView.setPolyline(polyline);
-
-        //var pos = Position.getInfo().position.toDegrees();
-        //var marker = new WatchUi.MapMarker(new Position.Location({:latitude => pos[0], :longitude =>pos[1], :format => :degrees}));
-        //marker.setIcon(WatchUi.MAP_MARKER_ICON_PIN, 0, 0);
-        //MapView.setMapMarker(marker);
+        clear();
+        setPolyline(polyline);
 
         var top_left = new Position.Location({:latitude => box["top"], :longitude =>box["left"], :format => :degrees});
         var bottom_right = new Position.Location({:latitude => box["bottom"], :longitude =>box["right"], :format => :degrees});
         
-        MapView.setMapVisibleArea(top_left, bottom_right);
+        if (getMapMode() == WatchUi.MAP_MODE_PREVIEW) {
+            setMapVisibleArea(top_left, bottom_right);
+        }
     }
 
     public function onUpdate(dc as Dc) as Void {

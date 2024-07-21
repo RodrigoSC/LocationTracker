@@ -21,7 +21,7 @@ class Tracker {
             var myLocation = info.position.toDegrees();
             var lastStoragePos = Properties.getValue("LastStoragePos");
             log(Lang.format("Saving on index $1$", [lastStoragePos]));
-            Storage.setValue(lastStoragePos,  [time, myLocation[0], myLocation[1]]);
+            Storage.setValue(lastStoragePos,  [time, myLocation[0], myLocation[1], info.altitude]);
             Properties.setValue("LastSave", time);
             Properties.setValue("LastStoragePos", lastStoragePos + 1);
             totalSaves = totalSaves + 1;
@@ -113,7 +113,7 @@ class Tracker {
         last = last > end ? end : last;
         for (var i = start; i < last; i++) {
             var item = (Storage.getValue(i) as Array);
-            array.add({"nbr" => i, "time" => item[0], "lat" => item[1], "lon" => item[2]});
+            array.add({"nbr" => i, "time" => item[0], "lat" => item[1], "lon" => item[2], "alt" => item[3]});
         }
         return array;
     }
