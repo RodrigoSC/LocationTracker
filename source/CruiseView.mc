@@ -14,47 +14,43 @@ class CruiseView extends LCView {
         setLayout($.Rez.Layouts.CruiseLayout(dc));
     }
 
+    function printSpeed(speed as Float) {
+        if (speed < 100) {return speed.format("%.1f");}
+        return speed.format("%d");
+    }
+    
     function onUpdate(dc as Dc) as Void {
         logm("CruiseView", "onUpdate");
         var time_text = View.findDrawableById("time") as Text;
         var sog_text = View.findDrawableById("sog") as Text;
+        var sogAvg_text = View.findDrawableById("sogAvg") as Text;
         var cog_text = View.findDrawableById("cog") as Text;
         var time = System.getClockTime();
         
         time_text.setText(time.hour.format("%02d") + ":" + time.min.format("%02d"));
-        if (tracker.sog < 100) {
-            sog_text.setText(tracker.sog.format("%.1f"));
-        } else {
-            sog_text.setText(tracker.sog.format("%d"));
-        }
-        cog_text.setText(tracker.cog + "º");
+        sog_text.setText(printSpeed(tracker.sog));
+        cog_text.setText(tracker.cog.format("%.3d"));
+        sogAvg_text.setText(printSpeed(tracker.sogAvg));
+
         View.onUpdate(dc);
-        drawCogArrow(dc, tracker.cog);
+
+        drawIndicator(dc, tracker.sog, tracker.sogAvg);
     }
 
-    function drawCogArrow(dc as Dc, angle as Float) as Void {
-        var arrowBuffer = Graphics.createBufferedBitmap({:width=> 20, :height=> 25}); 
-        var tmpDc = arrowBuffer.get().getDc();
-        var rad = angle * Math.PI / 180.0;
+    function drawIndicator(dc as Dc, sog as Float, avg as Float) {
+        log(Lang.format("Drawing indicator for $1$, avg $2$", [sog, avg]));
+        var HALF_WIDTH = 10;
+        var MAX_HEIGHT = 228 - 164;
+        var x = screenWidth / 2;
+        var value = sog - avg;
+        var color = value > 0 ? Graphics.COLOR_GREEN : Graphics.COLOR_RED;
+        var start = value > 0 ? 228 : 164;
+        var height = avg == 0 ? 0 : (value / avg) * (MAX_HEIGHT * 10);
+        height = height > MAX_HEIGHT ? MAX_HEIGHT : height;
+        height = height < -MAX_HEIGHT ? -MAX_HEIGHT : height;
         
-        tmpDc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
-        tmpDc.setAntiAlias(true);
-        tmpDc.clear();
-
-        tmpDc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
-        tmpDc.fillPolygon([[0, 17], [10, 0], [20, 17], [20, 25], [0, 25]]);
-
-        var transformMatrix = new Graphics.AffineTransform();
-        var sin = Math.sin(rad);
-        var cos = Math.cos(rad);
-        transformMatrix.initialize();
-        transformMatrix.translate(-10.0*cos + 227*sin, -227*cos - 10.0*sin);
-        transformMatrix.rotate(rad);
-
-        dc.drawBitmap2(screenWidth / 2, screenHeight / 2, arrowBuffer, {
-            :transform => transformMatrix,
-            :filterMode => Graphics.FILTER_MODE_BILINEAR
-        });
+        dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+        dc.fillPolygon([[x - HALF_WIDTH, start], [x + HALF_WIDTH, start], [x + HALF_WIDTH, start - height], [x - HALF_WIDTH, start - height]]);
     }
 }
 

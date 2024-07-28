@@ -8,9 +8,13 @@ class Tracker {
     private var positionEvent as Method(info as Position.Info) as Void?;
     private var autoExit as Boolean = false;
     private var totalSaves as Number = 0;
+    private var sogHist as Array<Float> = new[15];
+    private var sogHistI = 0;
+    
+    public var sogAvg = 0.0;
     public var sog = 0.0;
     public var cog = 0;
-
+    
     public function getLastSave() as Number {
         return Properties.getValue("LastSave");
     }
@@ -53,6 +57,20 @@ class Tracker {
         logm("Tracker","onPosition");
         sog = info.speed.toDouble() * 1.9438444924574;
         cog = (Math.toDegrees(info.heading) + 360).toNumber() % 360;
+        
+        sogHist[sogHistI] = sog;
+        sogHistI = (sogHistI + 1) % sogHist.size();
+        
+        sogAvg = 0.0;
+        var count = 0;
+        for(var i=0; i < sogHist.size(); i++) {
+            if(sogHist[i] != null) {
+                sogAvg += sogHist[i];
+                count ++;
+            }
+        }
+        sogAvg = sogAvg / count;
+        
         savePosition(info);
         if (positionEvent != null) {
             positionEvent.invoke(info);
