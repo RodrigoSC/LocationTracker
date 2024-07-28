@@ -4,77 +4,15 @@ import Toybox.WatchUi;
 import Toybox.Position;
 import Toybox.Timer;
 
-
-class StatusViewDelegate extends BehaviorDelegate {
-    var tracker as Tracker;
-
-    public function initialize(tracker) { 
-        me.tracker = tracker;
-        WatchUi.BehaviorDelegate.initialize();
-    }
-
-    public function onSelect() as Boolean {
-        var delegate = new MenuDelegate(tracker);
-        tracker.setAutoExit(false);
-        WatchUi.pushView(delegate.buildMenu(), delegate, WatchUi.SLIDE_RIGHT);
-        return true;
-    }
-
-    function switchToMap(transition as WatchUi.SlideType) as Void {
-        var view = new MapView(tracker);
-        tracker.setAutoExit(false);
-        WatchUi.switchToView(view, new MapViewDelegate(tracker, view), transition);
-    }
-
-    public function onNextPage() as Boolean {
-        switchToMap(WatchUi.SLIDE_UP);
-        return true;
-    }
-
-    public function onPreviousPage() as Boolean {
-        switchToMap(WatchUi.SLIDE_DOWN);
-        return true;
-    }
-}
-
-class StatusView extends WatchUi.View {
-    var tracker as Tracker;
-    var screenHeight as Number = 0;
-    var screenWidth as Number = 0;
-    var refreshTimer as Timer.Timer = new Timer.Timer();
-
+class StatusView extends LCView {
     function initialize(tracker as Tracker) {
-        me.tracker = tracker;
-        View.initialize();
+        LCView.initialize(tracker);
     }
 
-    function timerCallback() as Void {
-        requestUpdate();
-    }
-
-    function onShow() as Void {
-        logm("StatusView", "onShow");
-        tracker.setOnPositionEvent(method(:onPosition));
-        refreshTimer.start(method(:timerCallback), 5000, true);
-    }
-
-    function onHide() as Void {
-        logm("StatusView", "onHide");
-        tracker.setOnPositionEvent(null);
-        refreshTimer.stop();
-    }
-
-    public function onPosition(info as Position.Info) as Void {
-        logm("StatusView","onPosition");
-        requestUpdate();
-    }
-
-    // Load your resources here
     function onLayout(dc as Dc) as Void {
         logm("StatusView", "onLayout");
+        LCView.onLayout(dc);
         setLayout($.Rez.Layouts.StatusLayout(dc));
-        screenWidth = dc.getWidth();
-        screenHeight = dc.getHeight();
     }
 
     function qualityToColor (qual as Position.Quality) as Graphics.ColorValue {
@@ -131,5 +69,34 @@ class StatusView extends WatchUi.View {
         text.setLocation(circle_x + circle_radius*2, text.locY);
         dc.setColor(color, Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(circle_x, text.locY + text.height/2, circle_radius);        
+    }
+}
+
+class StatusViewDelegate extends BehaviorDelegate {
+    var tracker as Tracker;
+
+    public function initialize(tracker) { 
+        me.tracker = tracker;
+        WatchUi.BehaviorDelegate.initialize();
+    }
+
+    public function onSelect() as Boolean {
+        var delegate = new MenuDelegate(tracker);
+        tracker.setAutoExit(false);
+        WatchUi.pushView(delegate.buildMenu(), delegate, WatchUi.SLIDE_RIGHT);
+        return true;
+    }
+
+    public function onNextPage() as Boolean {
+        tracker.setAutoExit(false);
+        WatchUi.switchToView(new CruiseView(tracker), new CruiseViewDelegate(tracker), WatchUi.SLIDE_UP);
+        return true;
+    }
+
+    public function onPreviousPage() as Boolean {
+        tracker.setAutoExit(false);
+        var view = new MapView(tracker);
+        WatchUi.switchToView(view, new MapViewDelegate(tracker, view), WatchUi.SLIDE_DOWN);
+        return true;
     }
 }

@@ -8,6 +8,8 @@ class Tracker {
     private var positionEvent as Method(info as Position.Info) as Void?;
     private var autoExit as Boolean = false;
     private var totalSaves as Number = 0;
+    public var sog = 0.0;
+    public var cog = 0;
 
     public function getLastSave() as Number {
         return Properties.getValue("LastSave");
@@ -28,7 +30,7 @@ class Tracker {
         }
         if (getSavesToQuit() == 0 && autoExit) {
             log("Done all the saves. Exiting");
-            Attention.vibrate([new Attention.VibeProfile(25, 500)]);
+            Attention.vibrate([new Attention.VibeProfile(50, 500)]);
             System.exit();
         }
     }
@@ -49,6 +51,8 @@ class Tracker {
 
     public function onPosition(info as Position.Info) as Void {
         logm("Tracker","onPosition");
+        sog = info.speed.toDouble() * 1.9438444924574;
+        cog = (Math.toDegrees(info.heading) + 360).toNumber() % 360;
         savePosition(info);
         if (positionEvent != null) {
             positionEvent.invoke(info);

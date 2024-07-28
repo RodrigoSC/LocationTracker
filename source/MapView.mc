@@ -20,7 +20,7 @@ class MapViewDelegate extends WatchUi.BehaviorDelegate {
     }
 
     public function onPreviousPage() as Boolean {
-        WatchUi.switchToView(new StatusView(tracker), new StatusViewDelegate(tracker), WatchUi.SLIDE_DOWN);
+        WatchUi.switchToView(new CruiseView(tracker), new CruiseViewDelegate(tracker), WatchUi.SLIDE_DOWN);
         return true;
     }
 

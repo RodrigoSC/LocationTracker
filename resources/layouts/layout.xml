@@ -9,4 +9,11 @@
     <label id="lat" x="center" y="335" text="-" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
     <label id="lon" x="center" y="375" text="-" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
 </layout>
+<layout id="CruiseLayout">
+    <label id="time" x="center" y="30" text="00:00" font="Graphics.FONT_MEDIUM" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label id="sog" x="113" y="175" text="0" font="Graphics.FONT_NUMBER_MILD" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label          x="113" y="260" text="sog" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label id="cog" x="340" y="175" text="0º" font="Graphics.FONT_NUMBER_MILD" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label          x="340" y="260" text="cog" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+</layout>
 </resources>
