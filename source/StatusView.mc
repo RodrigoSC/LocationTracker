@@ -38,7 +38,6 @@ class StatusView extends LCView {
     
     // Update the view
     function onUpdate(dc as Dc) as Void {
-        View.onUpdate(dc);
         logm("StatusView", "onUpdate");
         var gps_text = View.findDrawableById("gps") as Text;
         var track_text = View.findDrawableById("tracking") as Text;
@@ -58,7 +57,7 @@ class StatusView extends LCView {
         } else {
             auto_exit_text.setText("");
         }
-
+        View.onUpdate(dc);
         addColorSign(dc, gps_text, qualityToColor(pos.accuracy));
         addColorSign(dc, track_text, tracker.isTracking() ? Graphics.COLOR_GREEN : Graphics.COLOR_RED);
     }

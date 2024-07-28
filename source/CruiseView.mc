@@ -16,7 +16,6 @@ class CruiseView extends LCView {
 
     function onUpdate(dc as Dc) as Void {
         logm("CruiseView", "onUpdate");
-        View.onUpdate(dc);
         var time_text = View.findDrawableById("time") as Text;
         var sog_text = View.findDrawableById("sog") as Text;
         var cog_text = View.findDrawableById("cog") as Text;
@@ -29,6 +28,33 @@ class CruiseView extends LCView {
             sog_text.setText(tracker.sog.format("%d"));
         }
         cog_text.setText(tracker.cog + "º");
+        View.onUpdate(dc);
+        drawCogArrow(dc, tracker.cog);
+    }
+
+    function drawCogArrow(dc as Dc, angle as Float) as Void {
+        var arrowBuffer = Graphics.createBufferedBitmap({:width=> 20, :height=> 25}); 
+        var tmpDc = arrowBuffer.get().getDc();
+        var rad = angle * Math.PI / 180.0;
+        
+        tmpDc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
+        tmpDc.setAntiAlias(true);
+        tmpDc.clear();
+
+        tmpDc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
+        tmpDc.fillPolygon([[0, 17], [10, 0], [20, 17], [20, 25], [0, 25]]);
+
+        var transformMatrix = new Graphics.AffineTransform();
+        var sin = Math.sin(rad);
+        var cos = Math.cos(rad);
+        transformMatrix.initialize();
+        transformMatrix.translate(-10.0*cos + 227*sin, -227*cos - 10.0*sin);
+        transformMatrix.rotate(rad);
+
+        dc.drawBitmap2(screenWidth / 2, screenHeight / 2, arrowBuffer, {
+            :transform => transformMatrix,
+            :filterMode => Graphics.FILTER_MODE_BILINEAR
+        });
     }
 }
 
