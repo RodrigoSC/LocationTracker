@@ -3,4 +3,7 @@
     <property id="ReminderInterval" type="number">60</property>
     <property id="LastStoragePos" type="number">0</property>
     <property id="LastSave" type="number">0</property>
+    <property id="SetDest" type="boolean">false</property>
+    <property id="DestLat" type="float">0.0</property>
+    <property id="DestLon" type="float">0.0</property>
 </properties>

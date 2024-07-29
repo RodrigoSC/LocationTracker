@@ -48,8 +48,8 @@ class StatusView extends LCView {
         var pos = Position.getInfo();
         var location = pos.position.toDegrees();
         
-        lon_text.setText(location[0].format("%f"));
-        lat_text.setText(location[1].format("%f"));
+        lat_text.setText(location[0].format("%f"));
+        lon_text.setText(location[1].format("%f"));
         lastsave_text.setText(lastSaveText());
         
         if (tracker.getAutoExit()) {

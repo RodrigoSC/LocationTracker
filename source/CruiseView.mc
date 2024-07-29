@@ -1,3 +1,4 @@
+import Toybox.Application;
 import Toybox.Lang;
 import Toybox.Graphics;
 import Toybox.WatchUi;
@@ -11,7 +12,11 @@ class CruiseView extends LCView {
     function onLayout(dc as Dc) as Void {
         logm("CruiseView", "onLayout");
         LCView.onLayout(dc);
-        setLayout($.Rez.Layouts.CruiseLayout(dc));
+        if(Properties.getValue("SetDest")) {
+            setLayout($.Rez.Layouts.CruiseLayoutDest(dc));
+        } else {
+            setLayout($.Rez.Layouts.CruiseLayout(dc));
+        }
     }
 
     function printSpeed(speed as Float) {
@@ -23,18 +28,57 @@ class CruiseView extends LCView {
         logm("CruiseView", "onUpdate");
         var time_text = View.findDrawableById("time") as Text;
         var sog_text = View.findDrawableById("sog") as Text;
-        var sogAvg_text = View.findDrawableById("sogAvg") as Text;
         var cog_text = View.findDrawableById("cog") as Text;
         var time = System.getClockTime();
+        var pos = Position.getInfo();
+        var location = pos.position.toDegrees();
+        var dest = [Properties.getValue("DestLat"), Properties.getValue("DestLon")];
         
         time_text.setText(time.hour.format("%02d") + ":" + time.min.format("%02d"));
         sog_text.setText(printSpeed(tracker.sog));
         cog_text.setText(tracker.cog.format("%.3d"));
-        sogAvg_text.setText(printSpeed(tracker.sogAvg));
-
+        
+        if (Properties.getValue("SetDest")) {
+            var dist_text = View.findDrawableById("dist") as Text;
+            var bear_text = View.findDrawableById("bear") as Text;
+            dist_text.setText(getCoordinateDistance(location, dest).format("%d"));
+            bear_text.setText(getCoordinateBearing(location, dest).format("%.3d"));
+        } else {
+            var sogAvg_text = View.findDrawableById("sogAvg") as Text;
+            sogAvg_text.setText(printSpeed(tracker.sogAvg));
+        }
         View.onUpdate(dc);
 
         drawIndicator(dc, tracker.sog, tracker.sogAvg);
+    }
+
+    function getCoordinateDistance(orig as Array<Double>, dest as Array<Double>) as Float {
+        // Code extracted from here: https://www.movable-type.co.uk/scripts/latlong.html
+        var R = 6371e3; // metres
+        var φ1 = orig[0] * Math.PI/180; 
+        var φ2 = dest[0] * Math.PI/180;
+        var Δφ = (dest[0]-orig[0]) * Math.PI/180;
+        var Δλ = (dest[1]-orig[1]) * Math.PI/180;
+
+        var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+          Math.cos(φ1) * Math.cos(φ2) *
+          Math.sin(Δλ/2) * Math.sin(Δλ/2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        var d = R * c; // in metres
+
+        return d / 1852;
+    }
+
+    function getCoordinateBearing(orig as Array<Double>, dest as Array<Double>) as Number {
+        var φ1 = orig[0] * Math.PI/180; 
+        var φ2 = dest[0] * Math.PI/180;
+        var λ1 = orig[1] * Math.PI/180; 
+        var λ2 = dest[1] * Math.PI/180;
+
+        var y = Math.sin(λ2-λ1) * Math.cos(φ2);
+        var x = Math.cos(φ1)*Math.sin(φ2) - Math.sin(φ1)*Math.cos(φ2)*Math.cos(λ2-λ1);
+        var θ = Math.atan2(y, x);
+        return (θ*180.0/Math.PI + 360.0).toNumber() % 360; 
     }
 
     function drawIndicator(dc as Dc, sog as Float, avg as Float) {

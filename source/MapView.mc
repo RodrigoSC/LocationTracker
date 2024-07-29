@@ -98,6 +98,7 @@ class MapView extends WatchUi.MapView {
             if (lon > box["right"]) {box["right"] = lon;}
         }
         clear();
+        
         setPolyline(polyline);
 
         var top_left = new Position.Location({:latitude => box["top"], :longitude =>box["left"], :format => :degrees});

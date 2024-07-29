@@ -1,0 +1,11 @@
+<settings>
+    <setting propertyKey="@Properties.SetDest" title="Set Destination">
+       <settingConfig type="boolean"/>
+    </setting>
+    <setting propertyKey="@Properties.DestLat" title="Latitude">
+       <settingConfig  type="numeric"/>
+    </setting>
+    <setting propertyKey="@Properties.DestLon" title="Longitude">
+       <settingConfig type="numeric"/>
+    </setting>
+</settings>

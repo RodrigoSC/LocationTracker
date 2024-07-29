@@ -23,6 +23,7 @@ class Tracker {
         logm("Tracker","savePoint");
         var time = Time.now().value();
         var saveInterval = totalSaves <= 3 ? 5 : 10;
+
         if (isTracking() && (time - getLastSave() > saveInterval) && (info.accuracy == Position.QUALITY_USABLE or info.accuracy == Position.QUALITY_GOOD)) {
             var myLocation = info.position.toDegrees();
             var lastStoragePos = Properties.getValue("LastStoragePos");
