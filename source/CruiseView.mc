@@ -56,8 +56,9 @@ class CruiseView extends LCView {
             var sogAvg_text = View.findDrawableById("sogAvg") as Text;
             sogAvg_text.setText(printSpeed(tracker.sogAvg));
         }
-        View.onUpdate(dc);
 
+        View.onUpdate(dc);
+        
         drawIndicator(dc, tracker.sog, tracker.sogAvg);
         if (Properties.getValue("SetDest")) {
             drawDestArrow(dc, destBear - tracker.cog, Graphics.COLOR_LT_GRAY);
@@ -119,18 +120,17 @@ class CruiseView extends LCView {
     }
 
     function drawIndicator(dc as Dc, sog as Float, avg as Float) {
-        var HALF_WIDTH = 10;
+        var WIDTH = 20;
         var MAX_HEIGHT = 218 - 154;
         var x = screenWidth / 2;
         var value = sog - avg;
         var color = value > 0 ? Graphics.COLOR_GREEN : Graphics.COLOR_RED;
-        var start = value > 0 ? 218 : 154;
-        var height = avg == 0 ? 0 : (value / avg) * (MAX_HEIGHT * 10);
+        var height = avg == 0 ? 0 : ((value / avg) * (MAX_HEIGHT * 10)).abs();
         height = height > MAX_HEIGHT ? MAX_HEIGHT : height;
-        height = height < -MAX_HEIGHT ? -MAX_HEIGHT : height;
+        var start = value > 0 ? 218 - height : 154;
         
         dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-        dc.fillPolygon([[x - HALF_WIDTH, start], [x + HALF_WIDTH, start], [x + HALF_WIDTH, start - height], [x - HALF_WIDTH, start - height]]);
+        dc.fillRoundedRectangle(x - WIDTH / 2, start, WIDTH, height, 3);
     }
 }
 
