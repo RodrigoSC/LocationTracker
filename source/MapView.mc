@@ -1,4 +1,5 @@
 
+import Toybox.Application;
 import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.WatchUi;
@@ -72,6 +73,13 @@ class MapView extends WatchUi.MapView {
         refreshTimer.stop();
     }
 
+    function updateBox (box as Dictionary, lat as Float, lon as Float) {
+        if (lat > box["top"]) {box["top"] = lat;}
+        if (lat < box["bottom"]) {box["bottom"] = lat;}
+        if (lon < box["left"]) {box["left"] = lon;}
+        if (lon > box["right"]) {box["right"] = lon;}
+    }
+
     function updatePoly() {
         logm("MapView", "updatePoly");
         var polyline = new WatchUi.MapPolyline();
@@ -92,12 +100,19 @@ class MapView extends WatchUi.MapView {
             var lat =  points[i]["lat"];
             var lon =  points[i]["lon"];
             polyline.addLocation(new Position.Location({:latitude => lat, :longitude => lon, :format => :degrees}));
-            if (lat > box["top"]) {box["top"] = lat;}
-            if (lat < box["bottom"]) {box["bottom"] = lat;}
-            if (lon < box["left"]) {box["left"] = lon;}
-            if (lon > box["right"]) {box["right"] = lon;}
+            updateBox(box, lat, lon);
         }
+
         clear();
+
+        if (Properties.getValue("SetDest")) {
+            var lat =  Properties.getValue("DestLat");
+            var lon =  Properties.getValue("DestLon");
+            var marker = new WatchUi.MapMarker(new Position.Location({:latitude => lat, :longitude => lon, :format => :degrees}));
+            updateBox(box, lat, lon);
+            marker.setIcon(WatchUi.MAP_MARKER_ICON_PIN, 0, 0);
+            setMapMarker(marker);
+        }
         
         setPolyline(polyline);
 

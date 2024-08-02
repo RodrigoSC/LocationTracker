@@ -20,14 +20,14 @@
 </layout>
 <layout id="CruiseLayoutDest">
     <label id="time" x="center" y="30" text="00:00" font="Graphics.FONT_MEDIUM" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <label id="sog" x="110" y="145" text="0" font="Graphics.FONT_NUMBER_MILD" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <label          x="110" y="230" text="sog" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <label id="cog" x="343" y="145" text="0º" font="Graphics.FONT_NUMBER_MILD" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <label          x="343" y="230" text="cog" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <label id="dist" x="130" y="300" text="0" font="Graphics.FONT_MEDIUM" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <label           x="130" y="360" text="dist" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <label id="bear" x="323" y="300" text="0" font="Graphics.FONT_MEDIUM" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <label           x="323" y="360" text="bear" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label id="sog" x="110" y="135" text="0" font="Graphics.FONT_NUMBER_MILD" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label          x="110" y="220" text="sog" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label id="cog" x="343" y="135" text="0º" font="Graphics.FONT_NUMBER_MILD" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label          x="343" y="220" text="cog" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label id="dist" x="130" y="290" text="0" font="Graphics.FONT_MEDIUM" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label           x="130" y="350" text="dist" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label id="bear" x="323" y="290" text="0" font="Graphics.FONT_MEDIUM" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label           x="323" y="350" text="bear" font="Graphics.FONT_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER" />
 
 </layout>
 </resources>

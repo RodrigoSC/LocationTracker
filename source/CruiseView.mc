@@ -5,6 +5,10 @@ import Toybox.WatchUi;
 import Toybox.Position;
 
 class CruiseView extends LCView {
+    private var destUpdate = 0;
+    private var destBear = 0.0;
+    private var destDist = 0.0;
+
     public function initialize(tracker) { 
         LCView.initialize(tracker);
     }
@@ -32,17 +36,22 @@ class CruiseView extends LCView {
         var time = System.getClockTime();
         var pos = Position.getInfo();
         var location = pos.position.toDegrees();
-        var dest = [Properties.getValue("DestLat"), Properties.getValue("DestLon")];
         
         time_text.setText(time.hour.format("%02d") + ":" + time.min.format("%02d"));
         sog_text.setText(printSpeed(tracker.sog));
         cog_text.setText(tracker.cog.format("%.3d"));
         
         if (Properties.getValue("SetDest")) {
+            var dest = [Properties.getValue("DestLat"), Properties.getValue("DestLon")];
             var dist_text = View.findDrawableById("dist") as Text;
             var bear_text = View.findDrawableById("bear") as Text;
-            dist_text.setText(getCoordinateDistance(location, dest).format("%d"));
-            bear_text.setText(getCoordinateBearing(location, dest).format("%.3d"));
+            if (destUpdate == 0) {
+                destBear = getCoordinateBearing(location, dest);
+                destDist = getCoordinateDistance(location, dest);
+            }
+            destUpdate = (destUpdate + 1) % 5;
+            dist_text.setText(destDist.format("%d"));
+            bear_text.setText(destBear.format("%.3d"));
         } else {
             var sogAvg_text = View.findDrawableById("sogAvg") as Text;
             sogAvg_text.setText(printSpeed(tracker.sogAvg));
@@ -50,6 +59,34 @@ class CruiseView extends LCView {
         View.onUpdate(dc);
 
         drawIndicator(dc, tracker.sog, tracker.sogAvg);
+        if (Properties.getValue("SetDest")) {
+            drawDestArrow(dc, destBear - tracker.cog, Graphics.COLOR_LT_GRAY);
+            drawDestArrow(dc, -tracker.cog, Graphics.COLOR_DK_GRAY);
+        }
+    }
+
+    function drawDestArrow(dc as Dc, angle as Float, color as Graphics.ColorValue) as Void {
+        var arrowBuffer = Graphics.createBufferedBitmap({:width=> 20, :height=> 25}); 
+        var tmpDc = arrowBuffer.get().getDc();
+        var rad = angle * Math.PI / 180.0;
+
+        tmpDc.setColor(color, Graphics.COLOR_TRANSPARENT);
+        tmpDc.setAntiAlias(true);
+        tmpDc.clear();
+
+        tmpDc.fillPolygon([[0, 17], [10, 0], [20, 17], [20, 25], [0, 25]]);
+
+        var transformMatrix = new Graphics.AffineTransform();
+        var sin = Math.sin(rad);
+        var cos = Math.cos(rad);
+        transformMatrix.initialize();
+        transformMatrix.translate(-10.0*cos + 227*sin, -227*cos - 10.0*sin);
+        transformMatrix.rotate(rad);
+
+        dc.drawBitmap2(screenWidth / 2, screenHeight / 2, arrowBuffer, {
+            :transform => transformMatrix,
+            :filterMode => Graphics.FILTER_MODE_BILINEAR
+        });
     }
 
     function getCoordinateDistance(orig as Array<Double>, dest as Array<Double>) as Float {
@@ -82,13 +119,12 @@ class CruiseView extends LCView {
     }
 
     function drawIndicator(dc as Dc, sog as Float, avg as Float) {
-        log(Lang.format("Drawing indicator for $1$, avg $2$", [sog, avg]));
         var HALF_WIDTH = 10;
-        var MAX_HEIGHT = 228 - 164;
+        var MAX_HEIGHT = 218 - 154;
         var x = screenWidth / 2;
         var value = sog - avg;
         var color = value > 0 ? Graphics.COLOR_GREEN : Graphics.COLOR_RED;
-        var start = value > 0 ? 228 : 164;
+        var start = value > 0 ? 218 : 154;
         var height = avg == 0 ? 0 : (value / avg) * (MAX_HEIGHT * 10);
         height = height > MAX_HEIGHT ? MAX_HEIGHT : height;
         height = height < -MAX_HEIGHT ? -MAX_HEIGHT : height;
